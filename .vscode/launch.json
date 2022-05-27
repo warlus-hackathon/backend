@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "backend",
+          "type": "python",
+          "request": "launch",
+          "module": "backend",
+          "envFile": "${workspaceFolder}/.env",
+          "console": "internalConsole",
+      },
+      {
+        "name": "create_db",
+        "type": "python",
+        "request": "launch",
+        "module": "backend.models",
+        "console": "internalConsole",
+        "envFile": "${workspaceFolder}/.env"
+      }
+  ]
+}
