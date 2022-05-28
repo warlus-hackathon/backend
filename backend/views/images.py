@@ -43,8 +43,11 @@ def get_all():
 def delete_image(uid):
     entity = image_repo.get_by_id(uid)
     image = schemas.Image.from_orm(entity).dict()
-    s3.delete_object(Bucket=config.aws.bucket_input_images, Key=image['name'])
-    s3.delete_object(Bucket=config.aws.bucket_output_images, Key=image['name'])
+    filename = image['name']
+    output_filename = filename.split('.')[0] + '_yolov3.jpg'
+
+    s3.delete_object(Bucket=config.aws.bucket_input_images, Key=filename)
+    s3.delete_object(Bucket=config.aws.bucket_output_images, Key=output_filename)
     s3.delete_object(Bucket=config.aws.bucket_output_cvs, Key=image['name'])
 
     image_repo.delete(uid)
