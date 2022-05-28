@@ -1,0 +1,56 @@
+version: '3'
+services:
+  db:
+    image: postgres:14
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+
+  webapp:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+
+  minio:
+    restart: always
+    image: minio/minio:RELEASE.2021-10-10T16-53-30Z
+    ports:
+      - '9000:9000'
+      - '6001:6001'
+    command: server /data --console-address ':6001' --address ':9000'
+    networks:
+      - backend
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+      - MINIO_HTTP_TRACE=/dev/stdout
+    volumes:
+      - ./.data/minio:/data
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    networks:
+      - backend
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+      /usr/bin/mc mb myminio/input-images;
+      /usr/bin/mc mb myminio/output-images;
+      /usr/bin/mc mb myminio/output-cvs;
+      /usr/bin/mc policy set public myminio/input-images;
+      /usr/bin/mc policy set public myminio/output-images;
+      /usr/bin/mc policy set public myminio/output-cvs;
+      exit 0;
+      "
+
+networks:
+  backend:
