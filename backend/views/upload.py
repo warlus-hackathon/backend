@@ -32,6 +32,17 @@ def download_file():
 
     file.save(upload_path)
 
+    resp = s3.list_buckets()
+    all_buckets = [bucket['Name'] for bucket in resp['Buckets']]
+
+    for bucket in [
+        config.aws.bucket_input_images,
+        config.aws.bucket_output_images,
+        config.aws.bucket_output_cvs
+    ]:
+        if bucket not in all_buckets:
+            s3.create_bucket(Bucket=bucket)
+
     s3.upload_file(str(upload_path), config.aws.bucket_input_images, filename)
 
     os.remove(upload_path)
