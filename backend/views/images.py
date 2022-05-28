@@ -45,7 +45,7 @@ def delete_image(uid):
 
 
 @view.put('/<uid>')
-def update_route(uid):
+def update_image(uid):
     payload = request.json
     payload['uid'] = uid
     new_image = schemas.Image(**payload)
