@@ -4,6 +4,8 @@ from flask import Blueprint, request, jsonify
 
 from backend import schemas
 from backend.repo.images import Image
+from backend.aws import s3
+from backend.config import config
 
 view = Blueprint('images', __name__)
 
@@ -27,7 +29,6 @@ def add_image():
 def get_image(uid):
     entity = image_repo.get_by_id(uid)
     image = schemas.Image.from_orm(entity)
-
     return image.dict(), HTTPStatus.OK
 
 
@@ -40,7 +41,14 @@ def get_all():
 
 @view.delete('/<uid>')
 def delete_image(uid):
+    entity = image_repo.get_by_id(uid)
+    image = schemas.Image.from_orm(entity).dict()
+    s3.delete_object(Bucket=config.aws.bucket_input_images, Key=image['name'])
+    s3.delete_object(Bucket=config.aws.bucket_output_images, Key=image['name'])
+    s3.delete_object(Bucket=config.aws.bucket_output_cvs, Key=image['name'])
+
     image_repo.delete(uid)
+
     return {}, HTTPStatus.NO_CONTENT
 
 
