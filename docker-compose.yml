@@ -28,8 +28,8 @@ services:
     networks:
       - backend
     environment:
-      - MINIO_ROOT_USER=leaddigitdfo
-      - MINIO_ROOT_PASSWORD=lead1234
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
       - MINIO_HTTP_TRACE=/dev/stdout
     volumes:
       - ./.data/minio:/data
@@ -42,7 +42,7 @@ services:
       - backend
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 leaddigitdfo lead1234;
+      /usr/bin/mc alias set myminio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
       /usr/bin/mc mb myminio/input-images;
       /usr/bin/mc mb myminio/output-images;
       /usr/bin/mc mb myminio/output-cvs;
@@ -51,5 +51,6 @@ services:
       /usr/bin/mc policy set public myminio/output-cvs;
       exit 0;
       "
+
 networks:
   backend:
