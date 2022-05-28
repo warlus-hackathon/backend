@@ -14,3 +14,4 @@ class Image(Schema):
     name: str
     path: str
     obj_number: Optional[int]
+    was_recognized: Optional[int]

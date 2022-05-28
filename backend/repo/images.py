@@ -40,7 +40,7 @@ class Image:
         db_session.delete(image)
         db_session.commit()
 
-    def update(self, name: str, uid: int, path: str, obj_number: int) -> DataImage:
+    def update(self, name: str, uid: int, path: str, obj_number: int, was_recognized: int) -> DataImage:
         image = DataImage.query.filter(DataImage.uid == uid).first()
         if not image:
             raise NotFoundError(self.name)
@@ -49,6 +49,7 @@ class Image:
             image.name = name
             image.path = path
             image.obj_number = obj_number
+            image.was_recognized = was_recognized
             db_session.commit()
         except IntegrityError:
             raise ConflictError(self.name)
