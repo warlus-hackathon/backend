@@ -48,7 +48,7 @@ def download_file():
     os.remove(upload_path)
 
     http = urllib3.PoolManager()
-    url = 'http://127.0.0.1:5001/api/v1/images/'
+    url = f'{config.server.endpoint}/api/v1/images/'
     payload = {'name': filename, 'path': f'{config.aws.bucket_input_images}/{filename}'}
     encoded_data = json.dumps(payload).encode('utf-8')
     http.request('POST', url, body=encoded_data, headers={'Content-Type': 'application/json'})
